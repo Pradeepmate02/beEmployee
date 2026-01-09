@@ -6,18 +6,23 @@ import * as Sentry from "@sentry/node"
 
 import connectDB from './config/db.js'
 import './config/instrument.js'
-import { clerkwebhooks } from './controllers/webHooks.js'
+import { clerkWebhooks } from './controllers/webHooks.js'
 
 
 //Initialize Express
 const app = express()
 
 //connect to database
-await connectDB()
+connectDB().then((res) => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 //middleware
 app.use(cors())
-app.use(express.json())
+
 
 //Routes
 app.get('/', (req, res) => res.send("API working"))
@@ -26,12 +31,17 @@ app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
 });
 
-app.post('/webhooks', clerkwebhooks)
+app.post('/webhooks', clerkWebhooks)
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 //port
 const PORT = process.env.PORT || 5000
 
+//set up for sentry
 Sentry.setupExpressErrorHandler(app);
 
 app.listen(PORT, () => {
+
     console.log(`server is running on port ${PORT}`)
 })

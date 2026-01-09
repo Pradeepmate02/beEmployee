@@ -3,21 +3,25 @@ import User from "../models/user.js"
 
 //Api controller function to manage clerk user with databse
 
-export const clerkwebhooks = async (req, res) => {
+
+export const clerkWebhooks = async (req, res) => {
+    console.log('hii')
+
     try{
         // create a Svix instance with clerk webhook secret.
-        const whook = new Webhook (process.env.CLERK_WEBHOOK_SECRET)
+        const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET)
 
         //Verifying Headers
-        await whook.verify(JSON.stringify(req.body), {
+        const event =  whook.verify(JSON.stringify(req.body), {
             "svix-id" : req.headers["svix-id"],
             "svix-timestamp" : req.headers["svix-timestamp"],
             "svix-signature" : req.headers["svix-signature"]
         })
 
+        console.log(req.body);
         //Getting data from request body
 
-        const {data, type} = req.body
+        const {data, type} = event
 
         //switch cases fro different event
         switch(type) {
@@ -54,10 +58,11 @@ export const clerkwebhooks = async (req, res) => {
             }
 
             default : 
-                break;
+            console.log(event)
+            
         }
     } catch (error) {
-        console.log(error.message);
-        res.json({success: false, message : 'webHooks error'})
+        
+        res.json({success: false, message : error.message})
     }
 }
