@@ -65,7 +65,7 @@ export const loginCompany = async (req, res) => {
         const company = await Company.findOne({email})
         
         //check if password match
-        if(bcrypt.company(password, company.password)){
+        if(await bcrypt.company(password, company.password)){
             res.json({
                 sucess : true,
                 company : {

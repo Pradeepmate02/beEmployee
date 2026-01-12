@@ -22,6 +22,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.2",
     "multer": "^2.0.2",
+    "ngrok": "^5.0.0-beta.2",
     "nodemon": "^3.1.11",
     "svix": "^1.84.1"
   }

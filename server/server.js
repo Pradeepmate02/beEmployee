@@ -13,7 +13,6 @@ import userRoutes from './routes/userRoutes.js'
 import connectCloudinary from './config/cloudinary.js'
 import {clerkMiddleware} from '@clerk/express'
 
-
 //Initialize Express
 const app = express()
 
@@ -31,18 +30,13 @@ await connectCloudinary()
 app.use(cors())
 app.use(clerkMiddleware())
 
-app.post('/api/webhooks', clerkWebhooks)
+app.post('/api/webhooks',express.raw({ type: 'application/json' }), clerkWebhooks)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
 //Routes
 app.get('/', (req, res) => res.send("API working"))
-
-app.get("/debug-sentry", function mainHandler(req, res) {
-  throw new Error("My first Sentry error!");
-});
-
 
 
 app.use('/api/company', companyRoutes)
@@ -57,6 +51,10 @@ const PORT = process.env.PORT || 5000
 
 //set up for sentry
 Sentry.setupExpressErrorHandler(app);
+
+
+
+
 
 app.listen(PORT, () => {
 
