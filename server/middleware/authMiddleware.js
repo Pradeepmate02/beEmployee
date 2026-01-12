@@ -1,4 +1,4 @@
-import jwt from 'jsonwentoken'
+import jwt from 'jsonwebtoken'
 import Company from '../models/company.js'
 
 export const protectCompany = async(req, res) => {
