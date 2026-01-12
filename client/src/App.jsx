@@ -10,6 +10,8 @@ import Addjob from './pages/RecruiterPages/Addjob'
 import ManageJobs from './pages/RecruiterPages/ManageJobs'
 import ViewApplication from './pages/RecruiterPages/ViewApplication'
 import 'quill/dist/quill.snow.css'
+ import { ToastContainer, toast } from 'react-toastify';
+
 
 function App() {
 
@@ -19,6 +21,7 @@ function App() {
       { showRecruiterLogin && 
       <RecruiterLogin/>
        }
+       <ToastContainer/>
        {/* routes help in routing the pages*/}
       <Routes>
         <Route path='/' element={<Home />}/>
