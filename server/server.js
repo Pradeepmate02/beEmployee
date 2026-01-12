@@ -7,6 +7,11 @@ import * as Sentry from "@sentry/node"
 import connectDB from './config/db.js'
 import './config/instrument.js'
 import { clerkWebhooks } from './controllers/webHooks.js'
+import companyRoutes from './routes/comanyRoutes.js'
+import jobRoutes from './routes/jobRoutes.js'
+import userRoutes from './routes/userRoutes.js'
+import connectCloudinary from './config/cloudinary.js'
+import {clerkMiddleware} from '@clerk/express'
 
 
 //Initialize Express
@@ -20,9 +25,16 @@ connectDB().then((res) => {
     console.log(err);
   });
 
+await connectCloudinary()
+
 //middleware
 app.use(cors())
+app.use(clerkMiddleware())
 
+app.post('/api/webhooks', clerkWebhooks)
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
 //Routes
 app.get('/', (req, res) => res.send("API working"))
@@ -31,10 +43,15 @@ app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
 });
 
-app.post('/api/webhooks', clerkWebhooks)
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }));
+
+app.use('/api/company', companyRoutes)
+
+app.use('/api/jobs', jobRoutes)
+
+app.use('/api/user', userRoutes)
+
+
 //port
 const PORT = process.env.PORT || 5000
 
