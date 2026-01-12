@@ -18,7 +18,7 @@ export const clerkWebhooks = async (req, res) => {
             "svix-signature" : req.headers["svix-signature"]
         })
 
-        console.log(req.body);
+
         //Getting data from request body
 
         const {data, type} = event
@@ -62,7 +62,6 @@ export const clerkWebhooks = async (req, res) => {
             
         }
     } catch (error) {
-        console.log(error.message);
-        res.json({success: false, message : error.message})
+        res.json({success: false, message : error.message, req.body})
     }
 }
