@@ -25,15 +25,17 @@ const RecruiterLogin = () => {
         e.preventDefault()
 
         if(state == 'Sign up' && !isTextDataSubmited){
-            setIsTextDataSubmited(true)
+            return setIsTextDataSubmited(true)
         }
         
         try{
             if(state === 'login'){
-
-                const {data} = await axios.post(backendUrl + 'api/company/login', {email, password})
                 
+                //sending api request to the server
+                const {data} = await axios.post(backendUrl + '/api/company/login', {email, password})
+                console.log(data)
                 if( data.success){
+                    //set the state variables
                     setCompanyData(data.company)
                     setCompanyToken(data.token)
                     localStorage.setItem('companyToken', data.token)
@@ -45,10 +47,28 @@ const RecruiterLogin = () => {
             }else{
 
                 const formData = new FormData()
-                formData.append
+                formData.append('name', name)
+                formData.append('password', password)
+                formData.append('email', email)
+                formData.append('image', image)
+
+                //send post request to api and get the res.json
+                const {data} = await axios.post(backendUrl + 'api/company/register', formData)
+
+                if( data.success){
+                    //set the state variables
+                    setCompanyData(data.company)
+                    setCompanyToken(data.token)
+                    localStorage.setItem('companyToken', data.token)
+                    setShowRecruiterLogin(false)
+                    navigate('/dashboard')
+                }else{
+                    console.log(err)
+                    toast.error(data.message)
+                }
             }
         }catch(err){
-
+                toast.error(err.message)
         }
         
     }

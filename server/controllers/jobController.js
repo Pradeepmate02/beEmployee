@@ -32,7 +32,7 @@ export const getJobById = async (req, res) => {
         try{
             const {id} = req.params
 
-            const jobs = await Job.findById(id)
+            const job = await Job.findById(id)
             .populate({
                 path: 'companyId',
                 select: '-password'
@@ -47,7 +47,7 @@ export const getJobById = async (req, res) => {
 
             res.json({
                 success: true,
-                jobs
+                job
             })
         }catch(err){
             res.json({

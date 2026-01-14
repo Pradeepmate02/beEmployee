@@ -1,11 +1,62 @@
-import React from 'react'
+import React, {useState, useContext} from 'react'
 import { manageJobsData } from '../../assets/assets'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
+import { AppContext } from '../../context/AppContext'
+import axios from 'axios'
+import { useEffect } from 'react'
+import { toast } from 'react-toastify';
 
 const ManageJobs = () => {
 
     const navigate = useNavigate()
+
+    const [jobs, setJobs] = useState([])
+    const {backendUrl, companyToken} = useContext(AppContext)
+
+    //function to fetch company Job applications data
+    const fetchCompanyJobs = async () =>{
+        try{
+
+            const {data}  = await axios.get(backendUrl + '/api/company/list-jobs',
+                {headers: {token : companyToken}}
+            )
+            console.log(data)
+            if(data.success){
+                // .reverse() used to reverse the arr so we get latest data at first
+                setJobs(data.jobsData.reverse())
+            }else{
+                toast.error(data.message)
+            }
+        }catch(err){
+            toast.error(err.message)
+        }
+    }
+    
+    //Function to change job visibility
+    const changeVisibilty = async (id) =>{
+        try{
+            const {data} = await axios.post(backendUrl + '/api/company/change-visibility',
+                { id },
+                { headers: {token : companyToken} }
+            )
+            if(data.success){
+                toast.success(data.message)
+                fetchCompanyJobs()
+            }else{
+                toast.error(data.message)
+            }
+        }catch(err){
+            toast.error(err.message)
+        }
+    }
+
+    useEffect(() =>{
+        if(companyToken){
+            fetchCompanyJobs()
+        }
+    }, [companyToken])
+
   return (
     <div className='container p-4 max-w-5xl'>
         <div className='overflow-x-auto'>
@@ -22,7 +73,7 @@ const ManageJobs = () => {
                 </thead>
                 <tbody>
                     {
-                        manageJobsData.map((job, index) =>(
+                        jobs.map((job, index) =>(
                             <tr key={index} className='text-gray-700'>
                                 <td className='py-2 px-4 border-b border-gray-200'>{index+1}</td>
                                 <td className='py-2 px-4 border-b border-gray-200'>{job.title}</td>
@@ -30,7 +81,7 @@ const ManageJobs = () => {
                                 <td className='py-2 px-4 border-b border-gray-200 max-sm:hidden'>{job.location}</td>
                                 <td className='py-2 px-4 border-b border-gray-200 text-center'>{job.applicants}</td>
                                 <td className='py-2 px-4 border-b border-gray-200'>
-                                    <input className='scale-125 ml-4' type="checkbox" />
+                                    <input onChange={() => changeVisibilty(job._id)} className='scale-125 ml-4' type="checkbox" checked={job.visible}/>
                                 </td>
                             </tr>
 

@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import {v2 as cloudinary} from 'cloudinary'
 import generateToken from "../utils/generateToken.js";
 import Job from "../models/job.js";
+import JobApplication from "../models/JobApplication.js";
 
 //Register a new company
 export const registerCompany = async (req, res) => {
@@ -47,7 +48,7 @@ export const registerCompany = async (req, res) => {
         })
     }catch(err){
         res.json({
-            sucess: false,
+            success: false,
             message: err.message
         })
     }
@@ -65,9 +66,9 @@ export const loginCompany = async (req, res) => {
         const company = await Company.findOne({email})
         
         //check if password match
-        if(await bcrypt.company(password, company.password)){
+        if(await bcrypt.compare(password, company.password)){
             res.json({
-                sucess : true,
+                success : true,
                 company : {
                     _id : company._id,
                     name : company.name,
@@ -80,14 +81,17 @@ export const loginCompany = async (req, res) => {
         }else{
             //if password don't match then give message
             res.json({
-                sucess : true,
+                success : true,
                 message: 'Invalid email or password'
             })
         }
 
 
     }catch(err){
-
+        res.json({
+            success: false,
+            message: err.message
+        })
     }
 
 }
@@ -157,13 +161,23 @@ export const getCompanyJobApplicants = async(req, res) =>{
 export const getCompanyPostedJobs = async (req, res) =>{
 
     try{
-        const companyId = req.compnay._id
+        const companyId = req.company._id
 
         const jobs = await Job.find({companyId})
 
+        //mo. of applicants applied for jobs
+        //job.map will return promise so we use promise.all so it will returnfinal array
+        const jobsData = await Promise.all(jobs.map( async (job) =>{
+            //.find() will return the all jobs with the jobId
+            const applicants = await JobApplication.find({jobId: job._id})
+
+            //each job will added the applicnats number
+            return {...job.toObject(), applicants: applicants.length}
+        }))
+
         res.json({
             success: true,
-            jobsData : jobs
+            jobsData
         })
     }catch(err){
 
@@ -191,7 +205,7 @@ export const changeVisiblity = async(req, res) =>{
             const companyId = req.company._id
             const job = await Job.findById(id)
 
-            //check if job and company id are same
+            //check if job's company Id and company id are same
             if(companyId.toString() === job.companyId.toString()){
                 job.visible = !job.visible
             }

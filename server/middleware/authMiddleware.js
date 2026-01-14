@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import Company from '../models/company.js'
 
-export const protectCompany = async(req, res) => {
+export const protectCompany = async(req, res, next) => {
     
     const token = req.headers.token
 
@@ -15,7 +15,7 @@ export const protectCompany = async(req, res) => {
     try{
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
         
-        req.company = await Company.findbyId(decoded.id).select('-password')
+        req.company = await Company.findById(decoded.id).select('-password')
 
         //next middleware needs to called 
         next()

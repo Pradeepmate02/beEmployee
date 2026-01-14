@@ -15,7 +15,7 @@ import 'quill/dist/quill.snow.css'
 
 function App() {
 
-  const {showRecruiterLogin} = useContext(AppContext)
+  const {showRecruiterLogin, companyToken} = useContext(AppContext)
   return (
     <div>
       { showRecruiterLogin && 
@@ -28,9 +28,14 @@ function App() {
         <Route path='/apply-job/:id' element={<ApplyJob/>}/>
         <Route path='/applications' element={<Application/>}/>
         <Route path='/dashboard' element ={<DashBoard/>}>
+        { 
+        //when a company token is available then only we can give the routes
+        companyToken? <>
           <Route path='add-job' element = {<Addjob />} />
           <Route path='manage-jobs' element= {<ManageJobs/>} />
           <Route path='view-applications' element ={<ViewApplication/>} />
+        </> : null
+        }
         </Route>
       </Routes>
     </div>
