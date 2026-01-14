@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext';
 import Navbar from '../components/Navbar'
 import { assets, jobsApplied } from '../assets/assets';
 import moment from 'moment';
-import Footer from '../components/footer';
+import Footer from '../components/Footer.jsx';
 import {useAuth, useUser} from '@clerk/clerk-react'
 import { toast } from 'react-toastify';
 import axios from 'axios'

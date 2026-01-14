@@ -7,7 +7,7 @@ import { assets } from '../assets/assets';
 import kconvert from 'k-convert';
 import moment from 'moment'
 import JobCard from '../components/JobCard';
-import Footer from '../components/footer';
+import Footer from '../components/Footer.jsx';
 import { toast } from 'react-toastify';
 import axios from 'axios'
 import {useAuth, useUser} from '@clerk/clerk-react'
