@@ -8,7 +8,7 @@ import JobApplication from "../models/JobApplication.js";
 //Register a new company
 export const registerCompany = async (req, res) => {
 
-   console.log(req.body)
+
     const {name, email, password} = req.body
     //used multer to get image from the form
     const imageFile = req.file;
@@ -154,6 +154,25 @@ export const postJob = async (req, res) => {
 //get company job applicanats
 export const getCompanyJobApplicants = async(req, res) =>{
 
+    try{
+        const companyId = req.company._id
+
+        //find job applications of the user and populate realted data
+        const applications = await JobApplication.find({companyId})
+        .populate('userId', 'name image resume')
+        .populate('jobId', 'title location category level salary')
+        .exec()
+
+        return res.json({
+            success: true,
+            applications
+        })
+    }catch(err){
+        res.json({
+            success: false,
+            message: err.message
+        })
+    }
 
 }
 
@@ -193,6 +212,23 @@ export const getCompanyPostedJobs = async (req, res) =>{
 //change job application status
 export const changeJobApplicationStatus = async (req, res) =>{
 
+   try{
+
+       const {id, status} = req.body
+       
+       //find job application and update
+       await JobApplication.findOneAndUpdate({_id : id}, {status})
+       
+       res.json({
+           success: true,
+           message: 'Status changed'
+        })
+    }catch(err){
+        res.json({
+            success: false,
+            message: err.message
+        })
+    }
          
 }
 
